@@ -1,7 +1,9 @@
 #include "mainwindow.h"
 #include "codepage.h"
 #include "welcomepage.h"
-//#include "settingspage.h"
+#include "plugininterface.h"
+#include "pagebrowser.h"
+#include "codeeditor.h"
 
 #include <QMenuBar>
 #include <QAction>
@@ -12,11 +14,16 @@
 #include <QFileDialog>
 #include <QTabBar>
 #include <QIcon>
+#include <QPluginLoader>
+#include <QSettings>
 
 #include "debug.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent),pageBrower{new PageBrowser{this}}
+    :QMainWindow(parent),
+     settings_{new QSettings{this}},
+     pageBrowser_{new PageBrowser{this}},
+     welcomePage_{nullptr}
 {
 
     auto theMenuBar=menuBar();
@@ -40,11 +47,11 @@ MainWindow::MainWindow(QWidget *parent)
         QMessageBox::aboutQt(this);
     });
 
-    connect(pageBrower,&PageBrowser::titleUpdated,this,&MainWindow::updateTitle);
+    connect(pageBrowser_,&PageBrowser::titleUpdated,this,&MainWindow::updateTitle);
 
     welcome();
 
-    setCentralWidget(pageBrower);
+    setCentralWidget(pageBrowser_);
 }
 
 MainWindow::~MainWindow()
@@ -53,8 +60,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::newFile()
 {
-    auto codePage=CodePage::newPage(pageBrower);
-    pageBrower->addPage(codePage,tr("New file"));
+    auto codePage=new CodePage{pageBrowser_};
+    pageBrowser_->addPage(codePage);
     updateTitle();
 }
 
@@ -64,16 +71,19 @@ void MainWindow::openFile()
     if(filePath.isEmpty()){
         return;
     }
-    auto codePage=CodePage::openFile(filePath,pageBrower);
+    auto codePage=new CodePage{filePath,pageBrowser_};
     if(codePage){
-        pageBrower->addPage(codePage,codePage->getTitle());
+        pageBrowser_->addPage(codePage);
         updateTitle();
     }
 }
 
 void MainWindow::saveFile()
 {
-    auto currentPage=dynamic_cast<ModifiablePage*>(pageBrower->currentPage());
+    auto currentPage=dynamic_cast<ModifiablePage*>(pageBrowser_->currentPage());
+    if(!currentPage){
+        return;
+    }
     if(currentPage->save()){
         updateTitle();
     }
@@ -81,19 +91,17 @@ void MainWindow::saveFile()
 
 void MainWindow::closeFile()
 {
-    auto page=pageBrower->currentIndex();
-    pageBrower->removePage(page);
+    auto page=pageBrowser_->currentIndex();
+    pageBrowser_->removePage(page);
     updateTitle();
 }
 
 void MainWindow::updateTitle()
 {
     QString title{tr("AwaCoder")};
-    if(pageBrower->count()==0){
-        title+=tr(" - Cake is a lie~");
-    }else{
+    if(pageBrowser_->count()){
         title+=tr(" - ");
-        title+=pageBrower->currentPage()->getTitle();
+        title+=pageBrowser_->currentPage()->getTitle();
     }
     setWindowTitle(title);
 
@@ -101,7 +109,10 @@ void MainWindow::updateTitle()
 
 void MainWindow::welcome()
 {
-    pageBrower->addPage(new WelcomePage{this},tr("Welcome"));
+    if(welcomePage_==nullptr){
+        welcomePage_=new WelcomePage{pageBrowser_};
+    }
+    pageBrowser_->addPage(welcomePage_);
     updateTitle();
 }
 

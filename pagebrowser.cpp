@@ -12,48 +12,43 @@ PageBrowser::PageBrowser(QWidget *parent)
     connect(this,&PageBrowser::currentChanged,this,&PageBrowser::titleUpdated);
 }
 
-int PageBrowser::addPage(AbstractPage *page)
+int PageBrowser::addPage(Page *page)
 {
-    int result=addTab(page->getWidget(),page->getTitle());
+    page->pageBrowser_=this;
+    auto index=indexOf(page);
+    if(index!=-1){
+        setCurrentIndex(index);
+        return index;
+    }
+    int result=addTab(page,page->getTitle());
+    connect(page,&Page::titleChanged,this,&PageBrowser::updateTitle);
     setCurrentIndex(result);
     return result;
 }
 
-int PageBrowser::addPage(AbstractPage *page, const QString &label)
-{
-    int result=addTab(page->getWidget(),label);
-    setCurrentIndex(result);
-    return result;
-}
 
-int PageBrowser::addPage(AbstractPage *page, const QIcon &icon, const QString &label)
+Page *PageBrowser::getPage(int index)
 {
-    int result=addTab(page->getWidget(),icon,label);
-    setCurrentIndex(result);
-    return result;
-}
-
-AbstractPage *PageBrowser::getPage(int index)
-{
-    return dynamic_cast<AbstractPage*>(widget(index));
+    return dynamic_cast<Page*>(widget(index));
 }
 
 void PageBrowser::removePage(int index)
 {
     auto page=getPage(index);
+    disconnect(page,&Page::titleChanged,this,&PageBrowser::updateTitle);
+    page->pageBrowser_=nullptr;
     page->close();
     removeTab(index);
-    delete page;
 }
 
-AbstractPage *PageBrowser::currentPage()
+Page *PageBrowser::currentPage()
 {
-    return dynamic_cast<AbstractPage*>(currentWidget());
+    return dynamic_cast<Page*>(currentWidget());
 }
 
-AbstractPage *PageBrowser::page(int index)
+Page *PageBrowser::page(int index)
 {
-    return dynamic_cast<AbstractPage*>(widget(index));
+    return dynamic_cast<Page*>(widget(index));
 }
 
 void PageBrowser::updateTitle()

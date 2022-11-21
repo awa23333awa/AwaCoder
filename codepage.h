@@ -1,45 +1,31 @@
 #ifndef CODEPAGE_H
 #define CODEPAGE_H
 
-#include "codeeditor.h"
 #include "modifiablepage.h"
-#include "pagebrowser.h"
 
-#include <QRegularExpression>
+class CodeEditor;
 
-class LineIndexBar;
-
-class CodePage : public CodeEditor, public ModifiablePage
+class CodePage : public ModifiablePage
 {
     Q_OBJECT
-private:
-    explicit CodePage(PageBrowser* parent=nullptr);
-    ~CodePage();
 public:
-    static const QRegularExpression cppFilePostfix;
+    explicit CodePage(QWidget* parent=nullptr);
+    explicit CodePage(QString fileName,QWidget* parent=nullptr);
+    ~CodePage();
 
     State state();
-
-    static CodePage* newPage(PageBrowser* parent=nullptr);
-    static CodePage* openFile(QString filePath,PageBrowser* parent=nullptr);
 
     // AbstractPage interface
 public:
     QString getTitle();
-    CodeEditor* getWidget();
 
     // ModifiablePage interface
 public:
     bool save();
-    void close();
-
-signals:
-    void fileSaved();
-    void stateChanged(ModifiablePage::State);
 
 private:
-    QString filePath_;
-    State state_;
+    QString fileName_;
+    CodeEditor* codeEditor_;
 };
 
 

@@ -2,7 +2,7 @@
 #define PAGEBROWSER_H
 
 #include <QTabWidget>
-#include "abstractpage.h"
+#include "page.h"
 
 class PageBrowser : public QTabWidget
 {
@@ -10,13 +10,11 @@ class PageBrowser : public QTabWidget
 public:
     explicit PageBrowser(QWidget* parent=nullptr);
 
-    virtual int addPage(AbstractPage* page);
-    virtual int addPage(AbstractPage* page,const QString& label);
-    virtual int addPage(AbstractPage* page,const QIcon& icon,const QString& label);
-    virtual AbstractPage* getPage(int index);
+    virtual int addPage(Page* page);
+    virtual Page* getPage(int index);
     virtual void removePage(int index);
-    virtual AbstractPage* currentPage();
-    virtual AbstractPage* page(int index);
+    virtual Page* currentPage();
+    virtual Page* page(int index);
     virtual void updateTitle();
 
 signals:

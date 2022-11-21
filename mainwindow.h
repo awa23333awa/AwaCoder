@@ -2,7 +2,13 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "pagebrowser.h"
+#include <QSettings>
+
+class QSettings;
+class PageBrowser;
+class SettingsConfig;
+class WelcomePage;
+class SettingsPage;
 
 class MainWindow : public QMainWindow
 {
@@ -23,6 +29,10 @@ public:
     void plugins();
 
 private:
-    PageBrowser* pageBrower;
+    QSettings* settings_;
+    SettingsConfig* settingsConfig_;
+    PageBrowser* pageBrowser_;
+    WelcomePage* welcomePage_;
+    SettingsPage* settingsPage_;
 };
 #endif // MAINWINDOW_H

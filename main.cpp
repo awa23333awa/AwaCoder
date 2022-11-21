@@ -1,15 +1,12 @@
+#include "awacoder.h"
 #include "mainwindow.h"
 
-#include <QApplication>
 #include <QLocale>
 #include <QTranslator>
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    QApplication::setOrganizationName("Awa");
-    QApplication::setOrganizationDomain("awa2333.dev");
-    QApplication::setApplicationName("AwaCoder");
+    AwaCoder a(argc, argv);
     QTranslator translator;
     const QStringList uiLanguages = QLocale::system().uiLanguages();
     for (const QString &locale : uiLanguages) {

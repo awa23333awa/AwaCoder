@@ -1,15 +1,17 @@
 #ifndef WELCOMEPAGE_H
 #define WELCOMEPAGE_H
 
-#include "abstractpage.h"
+#include "page.h"
 
 #include <QWidget>
 
-class WelcomePage : public QWidget, public AbstractPage
+class WelcomePage :public Page
 {
     Q_OBJECT
 public:
-    explicit WelcomePage(QWidget *parent = nullptr);
+    explicit WelcomePage(QWidget* parent=nullptr);
+
+private:
 
 signals:
 
@@ -17,7 +19,6 @@ signals:
     // AbstractPage interface
 public:
     QString getTitle();
-    QWidget *getWidget();
     void close();
 };
 

@@ -1,3 +1,4 @@
+// Copy from Qt example
 // Copyright (C) 2016 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR BSD-3-Clause
 
@@ -12,9 +13,10 @@ CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent)
 {
     QFont theFont;
     theFont.setPixelSize(14);
-    theFont.setFamilies({"Consolas", "Courier New", "monospace"});
+    theFont.setFamily("Courier New");
     theFont.setFixedPitch(true);
     setFont(theFont);
+
     setTabStopDistance(fontMetrics().horizontalAdvance(QLatin1Char('9'))*4);
     lineNumberArea = new LineNumberArea(this);
 
